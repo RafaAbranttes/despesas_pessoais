@@ -14,9 +14,18 @@ class ExpensesApp extends StatelessWidget {
     return MaterialApp(
       home: MyHomePage(),
       theme: ThemeData(
-        primarySwatch: Colors.orange,
-        accentColor: Colors.orange[400],
-      ),
+          primarySwatch: Colors.orange,
+          accentColor: Colors.orange[400],
+          fontFamily: 'Roboto',
+          appBarTheme: AppBarTheme(
+            textTheme: ThemeData.light().textTheme.copyWith(
+              headline6: TextStyle(
+                fontFamily: 'OpenSans',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )
+            ),
+          )),
     );
   }
 }
@@ -27,19 +36,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _transactions = [
-    Transaction(
-      id: 't1',
-      title: 'Novo Tênis de Corrida',
-      value: 310.76,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      title: 'Conta de luz',
-      value: 211.30,
-      id: 't2',
-      date: DateTime.now(),
-    ),
+  final List<Transaction>_transactions = [
+    //Transaction(
+    //  id: 't1',
+    //  title: 'Novo Tênis de Corrida',
+    //  value: 310.76,
+    //  date: DateTime.now(),
+    //),
+    //Transaction(
+    //  title: 'Conta de luz',
+    //  value: 211.30,
+    //  id: 't2',
+    //  date: DateTime.now(),
+    //),
   ];
 
   _addTransaction(String title, double value) {
@@ -70,8 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        
-        title: Center(child: Text('Despesas Pesoais')),
+        title: Center(
+            child: Text(
+          'Despesas Pesoais',
+        )),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
@@ -97,7 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(
           Icons.add,
         ),
-        
         onPressed: () => _openTransactionFormModal(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
