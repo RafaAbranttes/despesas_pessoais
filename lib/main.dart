@@ -1,3 +1,4 @@
+import 'package:expenses/components/chart.dart';
 import 'package:expenses/components/transaction_form.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -14,18 +15,29 @@ class ExpensesApp extends StatelessWidget {
     return MaterialApp(
       home: MyHomePage(),
       theme: ThemeData(
-          primarySwatch: Colors.orange,
-          accentColor: Colors.orange[400],
-          fontFamily: 'Roboto',
-          appBarTheme: AppBarTheme(
-            textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
-                fontFamily: 'OpenSans',
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              )
+        primarySwatch: Colors.orange,
+        accentColor: Colors.orange,
+        fontFamily: 'Roboto',
+        textTheme: ThemeData.light().textTheme.copyWith(
+            headline6: TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-          )),
+            button: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            )),
+        appBarTheme: AppBarTheme(
+          textTheme: ThemeData.light().textTheme.copyWith(
+                headline6: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+        ),
+      ),
     );
   }
 }
@@ -36,27 +48,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction>_transactions = [
-    //Transaction(
-    //  id: 't1',
-    //  title: 'Novo Tênis de Corrida',
-    //  value: 310.76,
-    //  date: DateTime.now(),
-    //),
-    //Transaction(
-    //  title: 'Conta de luz',
-    //  value: 211.30,
-    //  id: 't2',
-    //  date: DateTime.now(),
-    //),
-  ];
+  final List<Transaction> _transactions = [];
 
-  _addTransaction(String title, double value) {
+  List<Transaction> get _recentTransations {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
+
+  _addTransaction(String title, double value, DateTime date) {
     final newTransaction = Transaction(
       title: title,
       value: value,
       id: Random().nextDouble().toString(),
-      date: DateTime.now(),
+      date: date,
     );
 
     setState(() {
@@ -64,6 +69,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     Navigator.of(context).pop();
+  }
+
+  _deleteTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((element) {
+        return element.id == id;
+      });
+    });
   }
 
   _openTransactionFormModal(BuildContext context) {
@@ -79,10 +92,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text(
+        title: Text(
           'Despesas Pesoais',
-        )),
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
@@ -94,19 +106,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              child: Card(
-                child: Text('Gráfico'),
-                elevation: 5,
-              ),
-            ),
-            TransactionList(_transactions),
+            Chart(_recentTransations),
+            TransactionList(_transactions, _deleteTransaction),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(
           Icons.add,
+          color: Colors.white,
         ),
         onPressed: () => _openTransactionFormModal(context),
       ),
