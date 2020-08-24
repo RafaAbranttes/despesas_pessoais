@@ -106,10 +106,13 @@ class _MyHomePageState extends State<MyHomePage> {
     final mediaQuery = MediaQuery.of(context);
     bool isLandscape = mediaQuery.orientation == Orientation.landscape;
 
+    final iconList = Platform.isIOS ? CupertinoIcons.refresh : Icons.list;
+    final charList = Platform.isIOS ? CupertinoIcons.refresh : Icons.show_chart;
+
     final actions = <Widget>[
       if (isLandscape)
         _getIconButton(
-         _showChart ? Icons.list : Icons.show_chart,
+          _showChart ? iconList : charList,
           () {
             setState(() {
               _showChart = !_showChart;
@@ -118,15 +121,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       _getIconButton(
         Platform.isIOS ? CupertinoIcons.add : Icons.add,
-       () => _openTransactionFormModal(context),
+        () => _openTransactionFormModal(context),
       ),
     ];
 
     final PreferredSizeWidget appBar = Platform.isIOS
         ? CupertinoNavigationBar(
             middle: Text('Despesas Pessoais'),
-            trailing: Row(children: actions,
-            mainAxisSize: MainAxisSize.min,),
+            trailing: Row(
+              children: actions,
+              mainAxisSize: MainAxisSize.min,
+            ),
           )
         : AppBar(
             title: Text(
@@ -142,37 +147,39 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar.preferredSize.height -
         mediaQuery.padding.top;
 
-    final bodyPage = SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          // if(isLandscape)
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     Text('Exibir Gráfico'),
-          //     Switch.adaptive(
-          //       activeColor: Colors.orange,
-          //       value: _showChart,
-          //       onChanged: (value) {
-          //         setState(() {
-          //           _showChart = value;
-          //         });
-          //       },
-          //     ),
-          //   ],
-          // ),
-          if (_showChart || !isLandscape)
-            Container(
-              height: availabeHeight * (isLandscape ? 0.7 : 0.30),
-              child: Chart(_recentTransations),
-            ),
-          if (!_showChart || !isLandscape)
-            Container(
-              height: availabeHeight * (isLandscape ? 1 : 0.70),
-              child: TransactionList(_transactions, _deleteTransaction),
-            ),
-        ],
+    final bodyPage = SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            // if(isLandscape)
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Text('Exibir Gráfico'),
+            //     Switch.adaptive(
+            //       activeColor: Colors.orange,
+            //       value: _showChart,
+            //       onChanged: (value) {
+            //         setState(() {
+            //           _showChart = value;
+            //         });
+            //       },
+            //     ),
+            //   ],
+            // ),
+            if (_showChart || !isLandscape)
+              Container(
+                height: availabeHeight * (isLandscape ? 0.7 : 0.30),
+                child: Chart(_recentTransations),
+              ),
+            if (!_showChart || !isLandscape)
+              Container(
+                height: availabeHeight * (isLandscape ? 1 : 0.70),
+                child: TransactionList(_transactions, _deleteTransaction),
+              ),
+          ],
+        ),
       ),
     );
 
